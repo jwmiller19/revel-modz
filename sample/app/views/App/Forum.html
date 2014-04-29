@@ -46,21 +46,24 @@
                     </tr>
                 </thead>
 
-                {{range .topics}}
-                <tbody>
-                    <tr>
-                        <th>{{.TopicId}}</th>
-                        <th>
-                            <a href="/forum/{{.TopicId}}">{{.TopicName}}</a>
-                        </th>
-                        <th>{{.TopicTags}}</th>
-                        <th>{{.OpenedBy}}</th>
-                        <th>{{.OpenedAt}}</th>
-                    </tr>
-                </tbody>
-                {{end}}
-            </table>
+                <div id="forum-topiclist-results">
+                    {{range .topics}}
+                    <tbody>
+                        <tr>
+                            <th>{{.TopicId}}</th>
+                            <th>
+                                <a href="/forum/{{.TopicId}}">{{.TopicName}}</a>
+                            </th>
+                            <th>{{.TopicTags}}</th>
+                            <th>{{.OpenedBy}}</th>
+                            <th>{{.OpenedAt}}</th>
+                        </tr>
+                    </tbody>
+                    {{end}}
+                </div>
 
+            </table>
+                
     </div>
 </div>
 

@@ -122,6 +122,51 @@ func AddTopicTag(db *gorm.DB, tag string, topicId int64) error {
 	return nil
 }
 
+// unfinished.
+// Get a single topic from the topic id
+func GetTopicById(db *gorm.DB, topicId int64) (*TopicBrief, error) {
+
+	var (
+		firstMsg ForumMessage
+		lastMsg  ForumMessage
+		tags     []ForumTopicTag
+		stats    ForumTopicStats
+		err      error
+	)
+
+	// get current info
+	err = db.Where(ForumMessage{TopicId: topicId}).Order("created_at").First(&firstMsg).Last(&lastMsg).Error
+	if err != nil {
+		return nil, errors.New("ForumMessage " + fmt.Sprint(err))
+	}
+	err = db.Where(ForumTopicTag{TopicId: topicId}).Find(&tags).Error
+	if err != nil && err != gorm.RecordNotFound {
+		return nil, errors.New("ForumTopicTag " + fmt.Sprint(err))
+	}
+	err = db.Where(ForumTopic{TopicId: topicId}).First(&stats).Error
+	if err != nil && err != gorm.RecordNotFound {
+		return nil, errors.New("ForumTopicStats " + fmt.Sprint(err))
+	}
+
+	// build detail
+	mtags := make([]string, len(tags))
+	for i, t := range tags {
+		mtags[i] = t.TopicTag
+	}
+
+	brief = TopicBrief{
+		TopicId:     topic.TopicId,
+		TopicName:   topic.TopicName,
+		TopicTags:   mtags,
+		NumViews:    stats.NumViews,
+		NumMessages: stats.NumMessages,
+		OpenedAt:    firstMsg.CreatedAt,
+		OpenedBy:    firstMsg.AuthorName,
+		LastMsgAt:   lastMsg.CreatedAt,
+		LastMsgBy:   lastMsg.AuthorName,
+	}
+}
+
 func GetTopicList(db *gorm.DB, start, count int) ([]TopicBrief, error) {
 	var topics []ForumTopic
 
@@ -179,6 +224,10 @@ func GetTopicList(db *gorm.DB, start, count int) ([]TopicBrief, error) {
 	}
 
 	return briefs, nil
+}
+
+func GetMessageByTopicIdMsgId(db *gorm.DB, topicId, msgId int64) (*MessageWire, error) {
+
 }
 
 func GetAllMessagesByTopicId(db *gorm.DB, id int64) (*TopicDetail, error) {

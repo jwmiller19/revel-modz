@@ -49,7 +49,10 @@ func (c User) ForumTopicPost(subject, content string, tags []string) revel.Resul
 
 	// Add topic tags?
 
-	return c.RenderText("Success")
+	// Get the topic just created/added from DB
+	//topic :=
+
+	return c.RenderJSON(topic)
 }
 
 func (c User) ForumMessagePost(content string, topicId int64) revel.Result {

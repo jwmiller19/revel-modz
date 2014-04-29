@@ -174,9 +174,9 @@ function dosend_newtopic_post(subject, content, csrf) {
     xhr.onload = function(e) {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
-                // var results = JSON.parse(xhr.responseText);
+                var results = JSON.parse(xhr.responseText);
                 console.log(xhr.responseText);
-                
+                update_forum_topiclist_results_table(results);
             } else {
                 console.error(xhr.statusText);
             }
@@ -215,10 +215,15 @@ function update_forum_topiclist_results_table(results) {
 }
 
 var forum_topic_row_template_text = [
-'    <div class="row">',
-'    	<div class="large-3 small-3 columns"> <%TopicId%> 	</div>',
-'       <div class="large-3 small-3 columns"> <%TopicName%> </div>',
-'       <div class="large-3 small-3 columns"> <%AuthorId%> 	</div>',
-'       <div class="large-3 small-3 columns"> <%CreatedAt%> </div>',
-'    </div>',
+'<tbody>',
+'   <tr>',
+'       <th>{{.TopicId}}</th>',
+'       <th>',
+'           <a href="/forum/{{.TopicId}}">{{.TopicName}}</a>',
+'       </th>',
+'       <th>{{.TopicTags}}</th>',
+'       <th>{{.OpenedBy}}</th>',
+'       <th>{{.OpenedAt}}</th>',
+'   </tr>',
+'</tbody>',
 ].join("\n");
