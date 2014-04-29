@@ -5,7 +5,7 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/revel/revel"
 
-	// "github.com/iassic/revel-modz/modules/analytics"
+	"github.com/iassic/revel-modz/modules/analytics"
 	"github.com/iassic/revel-modz/modules/auth"
 	"github.com/iassic/revel-modz/modules/forum"
 	"github.com/iassic/revel-modz/modules/maillist"
@@ -109,7 +109,7 @@ func dropTables() {
 
 func addTables() {
 	revel.INFO.Println("AutoMigrate tables")
-	// analytics.AddTables(TestDB)
+	analytics.AddTables(TestDB)
 	user.AddTables(TestDB)
 	auth.AddTables(TestDB)
 	forum.AddTables(TestDB)

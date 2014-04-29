@@ -19,6 +19,18 @@ type ForumTopic struct {
 	TopicName string
 }
 
+type ForumTopicSubscriber struct {
+	// gorm fields
+	Id        int64
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt time.Time
+
+	// keys
+	TopicId   int64
+	UserEmail string
+}
+
 type ForumMessage struct {
 	// gorm fields
 	Id        int64
@@ -65,6 +77,10 @@ func AddTables(db *gorm.DB) error {
 	if err != nil {
 		return err
 	}
+	err = db.AutoMigrate(ForumTopicSubscriber{}).Error
+	if err != nil {
+		return err
+	}
 	err = db.AutoMigrate(ForumMessage{}).Error
 	if err != nil {
 		return err
@@ -83,6 +99,10 @@ func AddTables(db *gorm.DB) error {
 func DropTables(db *gorm.DB) error {
 	var err error
 	err = db.DropTable(ForumTopic{}).Error
+	if err != nil {
+		return err
+	}
+	err = db.DropTable(ForumTopicSubscriber{}).Error
 	if err != nil {
 		return err
 	}

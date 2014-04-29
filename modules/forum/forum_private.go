@@ -43,3 +43,29 @@ func getStatsByTopicId(db *gorm.DB, tId int64) (*ForumTopicStats, error) {
 	}
 	return &stats, nil
 }
+
+func getSubscriberByTopicId(db *gorm.DB, tId int64) ([]ForumTopicSubscriber, error) {
+	var subscriber []ForumTopicSubscriber
+	err := db.Where(&ForumTopicSubscriber{TopicId: tId}).Find(subscriber).Error
+	if err == gorm.RecordNotFound {
+		return nil, nil
+	}
+	if err != nil {
+		revel.TRACE.Println(err)
+		return nil, err
+	}
+	return subscriber, nil
+}
+
+func checkSubscriberByTopicId(db *gorm.DB, tId int64, email string) (bool, error) {
+	var subscriber ForumTopicSubscriber
+	err := db.Where(&ForumTopicSubscriber{TopicId: tId, UserEmail: email}).First(&subscriber).Error
+	if err == gorm.RecordNotFound {
+		return false, nil
+	}
+	if err != nil {
+		revel.TRACE.Println(err)
+		return false, err
+	}
+	return true, nil
+}

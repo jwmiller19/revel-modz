@@ -62,5 +62,7 @@ func (c User) ForumMessagePost(content string, topicId int64) revel.Result {
 		return c.RenderText("Error")
 	}
 
+	// this is where Email stuff will go (similar to signup.go)
+
 	return c.RenderText("Success")
 }
