@@ -14,18 +14,22 @@
     <div class="large-12 large-centered small-12 small-centered columns">
         <div class="small-4 columns">
             <!-- Button to create a new topic -->
-        	<a class="button" id="forum-new-topic-button">New Topic</a>
+            {{if .user_basic}}
+            <a class="button" id="forum-new-topic-button">New Topic</a>
+            {{else}} 
+            <a class="button secondary" id="forum-new-topic-button-disabled" title="You must be logged in to post to the forums">New Topic</a>
+            {{end}}
         </div>
 
         <div class="small-4 columns">
             <!-- Change to search bar? -->
-            <input type="text" id="forum-filter-topicid" placeholder="1" />
+            <!-- <input type="text" id="forum-filter-topicid" placeholder="1" /> -->
         </div>
 
         <div class="small-4 columns">
             <input type="hidden" name="csrf_token" id="csrf_token" value="{{ .csrf_token }}" />
             <!-- Topics update button -->
-            <a class="button" id="forum-filter-button">Update</a>
+            <!-- <a class="button" id="forum-filter-button">Update</a> -->
         </div>
 
     </div>
@@ -46,8 +50,8 @@
                     </tr>
                 </thead>
 
+                <tbody id="forum-topic-list-table-body">
                 {{range .topics}}
-                <tbody>
                     <tr>
                         <th>{{.TopicId}}</th>
                         <th>
@@ -57,14 +61,14 @@
                         <th>{{.OpenedBy}}</th>
                         <th>{{.OpenedAt}}</th>
                     </tr>
-                </tbody>
                 {{end}}
+                </tbody>
             </table>
 
     </div>
 </div>
 
-<div class="row">
+<div class="row" id="post-row">
     <div class="large-12 large-centered columns">
         <div id="forum-topiclist-new-topic">
 

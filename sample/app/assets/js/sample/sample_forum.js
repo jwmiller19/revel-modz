@@ -1,14 +1,15 @@
 function initForumView() {
   console.log("initForumView");
-  $("#forum-filter-button").on("click", handle_forum_filter_button_click);
+  // $("#forum-filter-button").on("click", handle_forum_filter_button_click);
+  $("#forum-topic-subscribe-button").on("click", handle_forum_topic_subscribe_button_click);
   $("#forum-reply-button").on("click", handle_forum_reply_button_click);
   $("#forum-new-topic-button").on("click", handle_forum_newtopic_button_click);
 }
 
 function handle_forum_filter_button_click(e) {
-  // dev debug printing
-  console.log("filter button was clicked");
-  console.log(e);
+    // dev debug printing
+    console.log("filter button was clicked");
+    console.log(e);
 
     // post filter values to server
     var id = $("#forum-filter-topicid").val();
@@ -20,21 +21,37 @@ function handle_forum_filter_button_click(e) {
     dosend_forum_filter_update(id, csrf);
 }
 
+function handle_forum_topic_subscribe_button_click(e) {
+    // dev debug printing
+    console.log("subsrcibe button was clicked");
+    console.log(e);
+
+    // post filter values to server
+    var id = $("#forum-filter-topicid").val();
+    var csrf = $("#csrf_token").val();
+
+    console.log("id", id);
+
+    // actually send data
+    dosend_forum_filter_update(id, csrf);
+
+}
+
 function handle_forum_reply_button_click(e) {
     // dev debug printing
     console.log("reply button was clicked");
     console.log(e);
 
     var forum_newmessage_text = [
-        '    <div class="row">',
-        '       <div class="large-12 small-12 columns">',
-        '           <input type="hidden" name="csrf_token" value="{{ .csrf_token }}" />',
-        '           <a class="button" id="message_post_button">Post</a>',
-        '       </div>',
-        '    </div>',
-        '    <div class="row">',
-        '       <div id="epiceditor"></div>',
-        '    </div>',
+    '    <div class="row">',
+    '       <div class="large-12 small-12 columns">',
+    '           <input type="hidden" name="csrf_token" value="{{ .csrf_token }}" />',
+    '           <a class="button" id="message_post_button">Post</a>',
+    '       </div>',
+    '    </div>',
+    '    <div class="row">',
+    '       <div id="epiceditor"></div>',
+    '    </div>',
     ].join("\n");
 
 
@@ -51,18 +68,18 @@ function handle_forum_newtopic_button_click(e) {
     console.log("new  topic button was clicked");
     console.log(e);
     var forum_newtopic_text = [
-        '    <div class="row">',
-        '       <div class="large-9 small-9 columns">',
-        '           <input type="hidden" name="csrf_token" value="{{ .csrf_token }}" />',
-        '           <input id="subject_field" type="text" placeholder="Subject">',
-        '       </div>',
-        '       <div class="large-3 small-3 columns">',
-        '           <a class="button" id="topic_post_button">Post</a>',
-        '       </div>',
-        '    </div>',
-        '    <div class="row">',
-        '       <div id="epiceditor"></div>',
-        '    </div>',
+    '    <div class="row">',
+    '       <div class="large-9 small-9 columns">',
+    '           <input type="hidden" name="csrf_token" value="{{ .csrf_token }}" />',
+    '           <input id="subject_field" type="text" placeholder="Subject">',
+    '       </div>',
+    '       <div class="large-3 small-3 columns">',
+    '           <a class="button" id="topic_post_button">Post</a>',
+    '       </div>',
+    '    </div>',
+    '    <div class="row">',
+    '       <div id="epiceditor"></div>',
+    '    </div>',
     ].join("\n");
 
 
@@ -85,6 +102,10 @@ function handle_newmessage_post_button_click(e) {
 
     var csrf = $("#csrf_token").val();
     dosend_newmessage_post(content, topicId, csrf);
+
+    // $("post-row").hide();
+    $("#forum-topic-new-message").empty();
+
 }
 
 function handle_newtopic_post_button_click(e) {
@@ -97,6 +118,10 @@ function handle_newtopic_post_button_click(e) {
 
     var csrf = $("#csrf_token").val();
     dosend_newtopic_post(subject, content, csrf);
+
+    // $("post-row").hide();
+    $("#forum-topiclist-new-topic").empty();
+
 }
 
 function dosend_forum_filter_update(id, csrf) {
@@ -114,7 +139,7 @@ function dosend_forum_filter_update(id, csrf) {
             if (xhr.status === 200) {
                 var results = JSON.parse(xhr.responseText);
                 console.log(results);
-                update_forum_topiclist_results_table(results);
+                // update_forum_topiclist_results_table(results);
             } else {
                 console.error(xhr.statusText);
             }
@@ -143,9 +168,10 @@ function dosend_newmessage_post(content, topicId, csrf) {
     xhr.onload = function(e) {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
-                // var results = JSON.parse(xhr.responseText);
-                console.log(xhr.responseText);
-
+                var results = JSON.parse(xhr.responseText);
+                console.log(results);
+                update_forum_messagelist_results_table(results);
+                
             } else {
                 console.error(xhr.statusText);
             }
@@ -173,9 +199,9 @@ function dosend_newtopic_post(subject, content, csrf) {
     xhr.onload = function(e) {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
-                // var results = JSON.parse(xhr.responseText);
+                var results = JSON.parse(xhr.responseText);
                 console.log(xhr.responseText);
-
+                update_forum_topiclist_results_table(results);
             } else {
                 console.error(xhr.statusText);
             }
@@ -192,34 +218,79 @@ function dosend_newtopic_post(subject, content, csrf) {
 
 function update_forum_topiclist_results_table(results) {
     // clear the current table results
-    $("#forum-topiclist-results").empty();
 
     // render results in panel
     if (results === null) {
         return
     }
 
-    var template = Hogan.compile(forum_topic_row_template_text, {
-        delimiters: '<% %>'
-    });
+    var template = Hogan.compile(forum_topic_row_template_text, { delimiters: '<% %>' });
     if (results instanceof Array) {
         for (var i = 0; i < results.length; i++) {
             var output = template.render(results[i]);
-            $("#forum-topiclist-results").append(output)
+            $("#forum-topic-list-table-body").prepend(output)
         }
-    } else { // should be a single element
-        var output = template.render(results);
-        $("#forum-topiclist-results").append(output)
+    } else {  // should be a single element
+            var output = template.render(results);
+            $("#forum-topic-list-table-body").prepend(output)
     }
 
+}
+
+function update_forum_messagelist_results_table(results) {
+    // clear the current table results
+
+    // render results in panel
+    if (results === null) {
+        return
+    }
+
+    var template = Hogan.compile(forum_message_row_template_text, { delimiters: '<% %>' });
+    if (results instanceof Array) {
+        for (var i = 0; i < results.length; i++) {
+            var output = template.render(results[i]);
+            $("#forum-message-list").append(output)
+        }
+    } else {  // should be a single element
+            var output = template.render(results);
+            $("#forum-message-list").append(output)
+    }
 
 }
 
 var forum_topic_row_template_text = [
-    '    <div class="row">',
-    '       <div class="large-3 small-3 columns"> <%TopicId%>   </div>',
-    '       <div class="large-3 small-3 columns"> <%TopicName%> </div>',
-    '       <div class="large-3 small-3 columns"> <%AuthorId%>  </div>',
-    '       <div class="large-3 small-3 columns"> <%CreatedAt%> </div>',
-    '    </div>',
+'   <tr>',
+'       <th><%TopicId%></th>',
+'       <th>',
+'           <a href="/forum/<%TopicId%>"><%TopicName%></a>',
+'       </th>',
+'       <th><%TopicTags%></th>',
+'       <th><%OpenedBy%></th>',
+'       <th><%OpenedAt%></th>',
+'   </tr>',
+].join("\n");
+
+var forum_message_row_template_text = [
+'    <div class="row">',
+'        <div class="large-12 large-centered columns">',
+'            <div class="panel">',
+'                <div class="row">',
+'                    <div class="large-4 small-4 columns">',
+'                        <%MessageId%>',
+'                    </div>',
+'                    <div class="large-4 small-4 columns">',
+'                        <%MessageTime%>',
+'                    </div>',
+'                    <div class="large-4 small-4 columns">',
+'                        <%MessageAuth%>',
+'                    </div>',
+'                </div>',
+'                <div class="row">',
+'                    <div class="large-12 small-12 columns">',
+'                        <%MessageBody%>',
+'                    </div>',
+'                </div>',
+'            </div>',
+'        </div>',
+'    </div>',
 ].join("\n");

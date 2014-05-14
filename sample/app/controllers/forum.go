@@ -49,7 +49,16 @@ func (c User) ForumTopicPost(subject, content string, tags []string) revel.Resul
 
 	// Add topic tags?
 
-	return c.RenderText("Success")
+	//return c.RenderText("Success")
+
+	detail, err := forum.GetTopicList(c.Txn, 0, 3)
+	if err != nil {
+		revel.ERROR.Println("Getting forum topic list: ", err)
+	}
+
+	topic := detail[0]
+
+	return c.RenderJson(topic)
 }
 
 func (c User) ForumMessagePost(content string, topicId int64) revel.Result {
@@ -63,6 +72,18 @@ func (c User) ForumMessagePost(content string, topicId int64) revel.Result {
 	}
 
 	// this is where Email stuff will go (similar to signup.go)
+	// subscribe a user to emails about the topic when they post
 
-	return c.RenderText("Success")
+	//return c.RenderText("Success")
+
+	// make this part work like in topic post
+	detail, err := forum.GetAllMessagesByTopicId(c.Txn, topicId)
+	if err != nil {
+		revel.ERROR.Println("Getting forum topic messages: ", err)
+	}
+
+	newMsgIndex := len(detail.Messages) - 1
+	message := detail.Messages[newMsgIndex]
+
+	return c.RenderJson(message)
 }

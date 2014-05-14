@@ -18,18 +18,22 @@
 
         <div class="small-3 columns">
             <!-- Change to search bar? -->
-            <input type="text" id="forum-filter-topicid" placeholder="1" />
+            <input type="hidden" name="csrf_token" id="csrf_token" value="{{ .csrf_token }}" />
         </div>
 
         <div class="small-3 columns">
-            <input type="hidden" name="csrf_token" id="csrf_token" value="{{ .csrf_token }}" />
-            <!-- Messages update button -->
-            <a class="button" id="forum-filter-button">Update</a>
+            <!-- Topic email subscribe button -->
+            <a class="button" id="forum-topic-subscribe-button">Subscribe</a>
         </div>
 
         <div class="small-3 columns">
             <!-- Open a text area to post a reply -->
+                        {{if .user_basic}}
             <a class="button" id="forum-reply-button">Reply</a>
+            {{else}} 
+            <a class="button secondary" id="forum-reply-button-disabled" title="You must be logged in to reply to posts in the forums">Reply</a>
+            {{end}}
+
         </div>
 
     </div>
@@ -58,8 +62,8 @@
     </div>
 </div>
 
-<div id="forum-topiclist-results">
-    {{range .detail.Messages}}
+<div id="forum-message-list">
+{{range .detail.Messages}}
     <div class="row">
         <div class="large-12 large-centered columns">
             <div class="panel">
@@ -71,8 +75,7 @@
                         {{.MessageTime}}
                     </div>
                     <div class="large-4 small-4 columns">
-                        {{.MessageAuth}}
-                        
+                        {{.MessageAuth}}              
                     </div>
                 </div>
 
@@ -85,10 +88,8 @@
             </div>
         </div>
     </div>
-    {{end}}
-
+{{end}}
 </div>
-
 
 <div class="row">
     <div class="large-12 large-centered columns">

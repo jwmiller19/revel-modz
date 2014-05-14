@@ -53,6 +53,10 @@ func AddNewTopic(db *gorm.DB, author, subject, body string) error {
 	}
 
 	// create subscriber struct
+	subscriber := &ForumTopicSubscriber{
+		TopicId:   tId,
+		UserEmail: author,
+	}
 
 	msg := &ForumMessage{
 		TopicId:     tId,
@@ -66,9 +70,12 @@ func AddNewTopic(db *gorm.DB, author, subject, body string) error {
 		NumViews:    0,
 	}
 
-	// save the subsrcibers
-
 	err = db.Save(topic).Error
+	if err != nil {
+		return err
+	}
+	// save the subsrcibers
+	err = db.Save(subscriber).Error
 	if err != nil {
 		return err
 	}
@@ -101,7 +108,7 @@ func AddNewMessage(db *gorm.DB, author, message string, topicId int64) error {
 		MessageBody: message,
 	}
 
-	// check email already subscribed. if not already subscribed,
+	// check if already subscribed to email. if not,
 	// create subscriber struct
 
 	stats.NumMessages += 1
